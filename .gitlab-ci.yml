@@ -1,0 +1,55 @@
+stages:
+  - install
+  - build
+  - docker
+  - secret-detection
+
+variables:
+  NODE_ENV: production
+  DOCKER_DRIVER: overlay2
+  SECRET_DETECTION_ENABLED: 'true'
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+install_dependencies:
+  stage: install
+  image: node:18
+  script:
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1h
+
+build_frontend:
+  stage: build
+  image: node:18
+  dependencies:
+    - install_dependencies
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+docker_build:
+  stage: docker
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - echo "Logging in to CI registry..."
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "Building Docker image..."
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - echo "Pushing Docker image..."
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  only:
+    - main
+
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
