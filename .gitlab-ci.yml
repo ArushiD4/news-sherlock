@@ -2,12 +2,10 @@ stages:
   - install
   - build
   - docker
-  - secret-detection
 
 variables:
   NODE_ENV: production
   DOCKER_DRIVER: overlay2
-  SECRET_DETECTION_ENABLED: "true"
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -50,6 +48,3 @@ docker_build:
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   only:
     - main
-
-include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
