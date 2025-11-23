@@ -7,7 +7,7 @@ stages:
 variables:
   NODE_ENV: production
   DOCKER_DRIVER: overlay2
-  SECRET_DETECTION_ENABLED: 'true'
+  SECRET_DETECTION_ENABLED: "true"
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
