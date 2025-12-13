@@ -11,6 +11,8 @@ node_modules/
 dist/
 dist-ssr
 *.local
+npm-debug.log*
+build/
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +25,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.local
+.env.*.local
+
+backend/node_modules/
+backend/prisma/.env
