@@ -34,6 +34,18 @@ build_frontend:
       - dist/
     expire_in: 1 week
 
+build_backend:
+  stage: build
+  image: node:18
+  dependencies:
+    - install_dependencies
+  script:
+    - npm run ci-build-backend   # dummy script for CI
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
 docker_build:
   stage: docker
   image: docker:24
