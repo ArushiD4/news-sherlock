@@ -1,88 +1,42 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import bgImage from "../assets/images/bg.png";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../services/authService";
+import bgImage from "../assets/images/bg.png"; // Make sure this path is correct
 
-export default function LoginPage() {
+function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
 
-  // states
-  const [username, setUsername] = useState(""); // used as name in register
-  const [email, setEmail] = useState("");       // used in login + register
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const API = "http://localhost:5000/api/users";
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+    
     try {
-      // basic validation
-      if (isLogin) {
-        if (!email || !password) {
-          alert("Please enter email and password");
-          return;
-        }
+      const data = await loginUser(formData);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        // Redirect to Home after successful login
+        navigate("/detect"); 
       } else {
-        if (!username || !email || !password || !confirmPassword) {
-          alert("Please fill all fields");
-          return;
-        }
-        if (password !== confirmPassword) {
-          alert("Passwords do not match");
-          return;
-        }
+        setError(data.message || "Login failed");
       }
-
-      const endpoint = isLogin ? "/login" : "/register";
-
-      const body = isLogin
-        ? {
-            email,
-            password,
-          }
-        : {
-            name: username,
-            email,
-            password,
-          };
-
-      const res = await fetch(`${API}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-    const text = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      console.error(text);
-      alert("backend did not return valid json");
-      return;
-    }
-
-
-      if (!res.ok) {
-        alert(data.error || "Request failed");
-        return;
-      }
-
-      alert(isLogin ? "Login successful" : "Registration successful");
-
-      if (isLogin) navigate("/detect");
-      else setIsLogin(true); 
-
     } catch (err) {
-      alert(err.message || "Backend not reachable");
-      console.error(err);
+      setError("Something went wrong. Please try again.");
     }
   };
 
   return (
     <div
-      className="min-h-screen bg-oxford_blue flex items-center justify-center px-4 py-10"
+      className="min-h-screen flex items-center justify-center text-white_custom px-4"
       style={{
         backgroundImage: `linear-gradient(rgba(7,17,36,0.55), rgba(7,17,36,0.55)), url(${bgImage})`,
         backgroundSize: "cover",
@@ -90,69 +44,57 @@ export default function LoginPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="bg-prussian_blue w-full max-w-md p-8 rounded-2xl shadow-2xl border border-charcoal text-center">
-        <h2 className="text-3xl font-bold text-white_custom mb-6">
-          {isLogin ? "Login" : "Register"}
-        </h2>
-
-        {/* Username (Register only) */}
-        {!isLogin && (
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-3 mb-4 rounded-xl bg-eerie_black text-white_custom placeholder-white_custom"
-          />
+      <div className="w-full max-w-md bg-prussian_blue p-8 rounded-2xl shadow-xl border border-charcoal">
+        <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
+        
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-100 p-3 rounded-lg mb-4 text-center">
+            {error}
+          </div>
         )}
 
-        {/* Email */}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 rounded-xl bg-eerie_black text-white_custom placeholder-white_custom"
-        />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-oxford_blue border border-charcoal focus:outline-none focus:ring-2 focus:ring-white_custom/30 text-white_custom"
+              required
+            />
+          </div>
 
-        {/* Password */}
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 rounded-xl bg-eerie_black text-white_custom placeholder-white_custom"
-        />
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              name="password"
+              type="password"
+              placeholder="Enter your password"
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-oxford_blue border border-charcoal focus:outline-none focus:ring-2 focus:ring-white_custom/30 text-white_custom"
+              required
+            />
+          </div>
 
-        {/* Confirm Password (Register only) */}
-        {!isLogin && (
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-3 mb-4 rounded-xl bg-eerie_black text-white_custom placeholder-white_custom"
-          />
-        )}
-
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-white_custom text-oxford_blue font-bold py-3 rounded-xl hover:bg-charcoal hover:text-white_custom transition-all duration-300"
-        >
-          {isLogin ? "Login" : "Register"}
-        </button>
-
-        <p className="text-white_custom mt-4">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-white_custom ml-2 underline hover:text-charcoal"
+            type="submit"
+            className="mt-4 py-3 font-bold rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-oxford_blue shadow-md hover:scale-105 transition-all duration-300"
           >
-            {isLogin ? "Register here" : "Login here"}
+            LOGIN
           </button>
+        </form>
+
+        <p className="text-center mt-6 text-sm text-gray-300">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-[#d4af37] font-semibold hover:underline">
+            Register here
+          </Link>
         </p>
       </div>
     </div>
   );
 }
+
+export default Login;

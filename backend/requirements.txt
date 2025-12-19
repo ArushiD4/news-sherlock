@@ -1,0 +1,10 @@
+flask
+flask-cors
+pandas
+scikit-learn
+joblib
+pymongo
+python-dotenv
+newspaper3k
+lxml_html_clean
+numpy

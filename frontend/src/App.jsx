@@ -1,7 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import Navbar from "./components/navbar";
+// UPDATED IMPORTS:
+import Login from "./pages/LoginPage";       
+import Register from "./pages/RegisterPage"; 
+import HomePage from "./pages/HomePage";
+import ResultsPage from "./pages/ResultsPage";
+import AboutPage from "./pages/AboutPage";
+import DigestPage from "./pages/DigestPage";
 
 function LandingScreen() {
   const navigate = useNavigate();
@@ -22,10 +29,9 @@ function LandingScreen() {
     >
       <Navbar />
 
-      {/* Quote below navbar */}
       <p className="absolute top-28 left-1/2 transform -translate-x-1/2 
-                   text-center text-xl md:text-2xl font-semibold text-white_custom 
-                   tracking-wide drop-shadow-md">
+                    text-center text-xl md:text-2xl font-semibold text-white_custom 
+                    tracking-wide drop-shadow-md">
         "Unmask the truth behind every headline."
       </p>
 
@@ -73,4 +79,20 @@ function LandingScreen() {
   );
 }
 
-export default LandingScreen;
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingScreen />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/detect" element={<HomePage />} />
+        <Route path="/results" element={<ResultsPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/digest" element={<DigestPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;

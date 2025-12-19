@@ -1,7 +1,0 @@
-node_modules
-.git
-*.log
-dist
-build
-Dockerfile
-docker-compose.yml

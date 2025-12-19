@@ -1,123 +1,109 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
-import bgImage from "../assets/images/bg.png";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 
-export default function HomePage() {
-  const navigate = useNavigate();
-  const location = useLocation();
+function HomePage() {
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Reference to Detect section
-  const detectSectionRef = useRef(null);
-
-  // Scroll when coming from Navbar Detect
-  useEffect(() => {
-    if (location.state?.scrollToDetect) {
-      detectSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Basic URL validation
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
     }
-  }, [location]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isValidUrl(input)) {
+      alert("Please enter a valid URL (e.g., https://www.bbc.com/news/...)");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1. Send URL to Python Backend
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: input.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // 2. Success: Navigate to Results with REAL data
+        navigate("/results", { 
+          state: { 
+            url: input, 
+            prediction: data.prediction, 
+            excerpt: data.excerpt 
+          } 
+        });
+      } else {
+        // 3. Server Error (e.g. scraping failed)
+        alert(data.error || "Analysis failed. Please try again.");
+      }
+
+    } catch (error) {
+      console.error("Connection error:", error);
+      alert("Could not connect to the server. Is python app.py running?");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div
-      className="min-h-screen text-white_custom flex flex-col items-center px-4"
+    <div className="min-h-screen bg-oxford_blue text-white_custom relative"
       style={{
-        backgroundImage: `linear-gradient(rgba(7,17,36,0.55), rgba(7,17,36,0.55)), url(${bgImage})`,
+        backgroundImage: `linear-gradient(rgba(7,17,36,0.55), rgba(7,17,36,0.55)), url(/src/assets/images/bg.png)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
       <Navbar />
-      
-      {/* Header */}
-      <header className="mt-12 text-center">
-        <h1 className="text-5xl font-extrabold text-white_custom tracking-wide drop-shadow-lg">
-          News Sherlock
-        </h1>
-        <p className="text-lg mt-3 text-white_custom max-w-xl mx-auto">
-          Fact-check & bias analysis— detect misinformation instantly.
-        </p>
-      </header>
 
-      {/* Main Content */}
-      <main className="mt-16 w-full max-w-3xl flex flex-col items-center">
-        {/* Card */}
-        <div
-          ref={detectSectionRef}
-          className="w-full bg-prussian_blue p-8 rounded-2xl shadow-xl border border-charcoal"
-        >
-          <h2 className="text-2xl font-semibold mb-4">
-            Paste Your News Article
-          </h2>
-          <textarea
-            placeholder="Enter news content or URL here..."
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center drop-shadow-lg">
+          Validate Your News
+        </h1>
+
+        <form onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col gap-6">
+          <input
+            type="text"
+            placeholder="Paste news article URL here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="w-full h-40 p-4 rounded-xl bg-oxford_blue text-white_custom border border-charcoal focus:outline-none focus:ring-2 focus:ring-white_custom/30"
+            className="w-full py-6 px-4 rounded-xl text-oxford_blue focus:outline-none focus:ring-4 focus:ring-yellow-500/50 shadow-lg text-lg"
           />
-
-          {input.trim() === "" ? (
-            <button
-              disabled
-              className="mt-6 w-full py-3 bg-white_custom text-oxford_blue font-bold rounded-xl opacity-60 cursor-not-allowed"
-            >
-              Analyze Now
-            </button>
-          ) : (
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button
-                onClick={() =>
-                  navigate("/results", {
-                    state: { url: input.trim(), checkType: "fact" },
-                  })
-                }
-                className="w-full py-3 bg-white_custom text-oxford_blue font-bold rounded-xl hover:bg-charcoal hover:text-white_custom transition-all duration-300 shadow-md"
-              >
-                Fact Check
-              </button>
-
-              <button
-                onClick={() =>
-                  navigate("/results", {
-                    state: { url: input.trim(), checkType: "bias" },
-                  })
-                }
-                className="w-full py-3 bg-transparent border border-white_custom text-white_custom font-bold rounded-xl hover:bg-white_custom/5 transition-all duration-300 shadow-md"
-              >
-                Bias Check
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Features Section */}
-        <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-          <div className="bg-prussian_blue p-6 rounded-2xl shadow-md border border-charcoal text-center">
-            <h3 className="text-xl font-semibold mb-2">Fake News Detection</h3>
-            <p className="text-white_custom">
-              AI model trained to detect misinformation patterns.
-            </p>
-          </div>
-          <div className="bg-prussian_blue p-6 rounded-2xl shadow-md border border-charcoal text-center">
-            <h3 className="text-xl font-semibold mb-2">Bias Analysis</h3>
-            <p className="text-white_custom">
-              Identify political or emotional bias in news text.
-            </p>
-          </div>
-          <div className="bg-prussian_blue p-6 rounded-2xl shadow-md border border-charcoal text-center">
-            <h3 className="text-xl font-semibold mb-2">Instant Insights</h3>
-            <p className="text-white_custom">
-              Get clear results in seconds with detailed scoring.
-            </p>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="mt-20 mb-6 text-charcoal text-sm">
-        © News Sherlock- Fake News Detection System
-      </footer>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`
+              w-3/4 mx-auto py-4 rounded-full font-bold text-oxford_blue shadow-lg transition-all duration-300 text-lg uppercase tracking-wide
+              ${loading 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : "bg-gradient-to-r from-[#d4af37] to-[#b8860b] hover:scale-105 hover:shadow-yellow-500/50"
+              }
+            `}
+          >
+            {loading ? "Scanning..." : "Scan News"}
+          </button>
+        </form>
+        
+        <p className="mt-6 text-gray-300 text-lg max-w-xl text-center">
+          "Unmask the truth behind every headline."
+        </p>
+      </div>
     </div>
   );
 }
+
+export default HomePage;
