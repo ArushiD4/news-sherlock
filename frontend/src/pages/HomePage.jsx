@@ -7,7 +7,6 @@ function HomePage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Basic URL validation
   const isValidUrl = (string) => {
     try {
       new URL(string);
@@ -28,7 +27,6 @@ function HomePage() {
     setLoading(true);
 
     try {
-      // 1. Send URL to Python Backend
       const response = await fetch("http://127.0.0.1:5000/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -38,7 +36,6 @@ function HomePage() {
       const data = await response.json();
 
       if (response.ok) {
-        // 2. Success: Navigate to Results with REAL data
         navigate("/results", { 
           state: { 
             url: input, 
@@ -47,7 +44,6 @@ function HomePage() {
           } 
         });
       } else {
-        // 3. Server Error (e.g. scraping failed)
         alert(data.error || "Analysis failed. Please try again.");
       }
 

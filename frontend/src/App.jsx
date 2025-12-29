@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import Navbar from "./components/navbar";
-// UPDATED IMPORTS:
 import Login from "./pages/LoginPage";       
 import Register from "./pages/RegisterPage"; 
 import HomePage from "./pages/HomePage";
@@ -35,7 +34,6 @@ function LandingScreen() {
         "Unmask the truth behind every headline."
       </p>
 
-      {/* DETECT button */}
       <button
         onClick={handleDetect}
         className="
