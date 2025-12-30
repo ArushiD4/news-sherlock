@@ -6,28 +6,33 @@ export default function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 1. Get Real Data from Router State
-  // If state is null (direct access), use fallback/dummy data
-  const { url, prediction, excerpt } = location.state || {
-    url: "No URL provided",
-    prediction: "Unknown", 
-    excerpt: "Please go back and scan a valid news URL."
+  // 1. Get Real Data from Router State (Updated for Node.js Backend)
+  const { originalText, verdict, confidence, reasons, apiUsed } = location.state || {
+    originalText: "No text provided",
+    verdict: "Unknown", 
+    confidence: 0,
+    reasons: ["Please go back and scan a valid news text."],
+    apiUsed: "None"
   };
 
-  // 2. Determine Styling based on Result
-  const isFake = prediction === "Fake News";
-  const isTrue = prediction === "True News";
+  // 2. Determine Styling based on Verdict
+  // We check for keywords because sometimes verdict might be "False" or "Fake" or "Pants on Fire"
+  const isFake = ["Fake", "False", "Pants on Fire", "Misleading"].some(v => verdict?.includes(v));
+  const isTrue = ["Real", "True", "Likely Real"].some(v => verdict?.includes(v));
   
-  // Default to gray if unknown
-  let resultColor = "text-gray-400";
-  let borderColor = "border-gray-500";
+  // Default (Unknown/Unverified)
+  let resultColor = "text-yellow-500";
+  let borderColor = "border-yellow-500";
+  let badgeColor = "bg-yellow-500/10 text-yellow-500";
   
   if (isFake) {
     resultColor = "text-red-500";
     borderColor = "border-red-500";
+    badgeColor = "bg-red-500/10 text-red-500";
   } else if (isTrue) {
     resultColor = "text-green-500";
     borderColor = "border-green-500";
+    badgeColor = "bg-green-500/10 text-green-500";
   }
 
   return (
@@ -49,30 +54,45 @@ export default function ResultsPage() {
                 Classification Result
               </h2>
               
-              <div className={`text-5xl md:text-7xl font-extrabold ${resultColor} drop-shadow-lg mb-8 uppercase`}>
-                {prediction}
+              <div className={`text-5xl md:text-7xl font-extrabold ${resultColor} drop-shadow-lg mb-4 uppercase`}>
+                {verdict}
               </div>
 
-              {/* Source Link */}
-              <div className="bg-oxford_blue/50 p-4 rounded-xl border border-charcoal inline-block max-w-full overflow-hidden text-ellipsis mb-8">
-                <span className="text-gray-400 mr-2">Source:</span>
-                <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline truncate">
-                  {url}
-                </a>
+              {/* Confidence & Source Badges */}
+              <div className="flex justify-center gap-4 mb-8">
+                <span className={`px-4 py-2 rounded-full font-mono text-sm border ${borderColor} ${badgeColor}`}>
+                  Confidence: {confidence}%
+                </span>
+                <span className="px-4 py-2 rounded-full font-mono text-sm bg-gray-700 text-gray-300 border border-gray-600">
+                  Analyzed by: {apiUsed}
+                </span>
               </div>
             </div>
 
-            {/* Excerpt Section */}
-            {excerpt && (
+            {/* Analysis Reasons Section */}
+            {reasons && reasons.length > 0 && (
               <div className="mt-6 bg-oxford_blue p-6 rounded-xl border border-charcoal">
                 <h3 className="text-lg font-semibold text-[#d4af37] mb-3">
-                  📝 Content Analyzed
+                  🧐 Key Findings
                 </h3>
-                <p className="text-gray-300 italic leading-relaxed text-lg">
-                  "{excerpt}"
-                </p>
+                <ul className="list-disc pl-5 space-y-2 text-gray-300 text-lg">
+                  {reasons.map((reason, index) => (
+                    <li key={index}>{reason}</li>
+                  ))}
+                </ul>
               </div>
             )}
+
+            {/* Original Text Section */}
+            <div className="mt-6 p-6 rounded-xl border border-gray-700 bg-gray-900/50">
+                <h3 className="text-sm font-semibold text-gray-400 mb-2 uppercase">
+                  📝 Content Analyzed
+                </h3>
+                <p className="text-gray-300 italic leading-relaxed line-clamp-3">
+                  "{originalText}"
+                </p>
+            </div>
+
           </div>
 
           {/* Back Button */}

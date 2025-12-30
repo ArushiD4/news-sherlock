@@ -7,53 +7,48 @@ function HomePage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Basic URL validation
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isValidUrl(input)) {
-      alert("Please enter a valid URL (e.g., https://www.bbc.com/news/...)");
+    // VALIDATION: We now accept text OR URLs, so we just check length
+    if (input.trim().length < 20) {
+      alert("Please enter a valid headline or claim (at least 20 chars) for accurate detection.");
       return;
     }
 
     setLoading(true);
 
     try {
-      // 1. Send URL to Python Backend
-      const response = await fetch("http://127.0.0.1:5000/predict", {
+      // 1. Send Text to Node.js Backend
+      // ⚠️ UPDATED: Port 5000 and /api/news/check endpoint
+      const response = await fetch("http://localhost:5000/api/news/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: input.trim() }),
+        // ⚠️ UPDATED: Backend expects 'text', not 'url'
+        body: JSON.stringify({ text: input.trim() }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // 2. Success: Navigate to Results with REAL data
+        // 2. Success: Navigate to Results with NEW data structure
         navigate("/results", { 
           state: { 
-            url: input, 
-            prediction: data.prediction, 
-            excerpt: data.excerpt 
+            originalText: input, 
+            verdict: data.verdict,       // e.g. "Fake", "Real"
+            confidence: data.confidence, // e.g. 85
+            reasons: data.reasons,       // Array of strings
+            apiUsed: data.apiUsed        // e.g. "Google" or "KeywordAnalysis"
           } 
         });
       } else {
-        // 3. Server Error (e.g. scraping failed)
-        alert(data.error || "Analysis failed. Please try again.");
+        // 3. Server Error
+        alert(data.msg || "Analysis failed. Please try again.");
       }
 
     } catch (error) {
       console.error("Connection error:", error);
-      alert("Could not connect to the server. Is python app.py running?");
+      alert("Could not connect to the backend. Is 'node server.js' running on port 5000?");
     } finally {
       setLoading(false);
     }
@@ -78,7 +73,8 @@ function HomePage() {
         <form onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col gap-6">
           <input
             type="text"
-            placeholder="Paste news article URL here..."
+            // ⚠️ UPDATED: Placeholder to reflect text capability
+            placeholder="Paste news URL, headline or claim here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="w-full py-6 px-4 rounded-xl text-oxford_blue focus:outline-none focus:ring-4 focus:ring-yellow-500/50 shadow-lg text-lg"
@@ -94,7 +90,7 @@ function HomePage() {
               }
             `}
           >
-            {loading ? "Scanning..." : "Scan News"}
+            {loading ? "Analyzing..." : "Scan News"}
           </button>
         </form>
         
