@@ -1,0 +1,12 @@
+{
+  "trusted": [
+    "bbc.com", "reuters.com", "apnews.com", "npr.org", "pbs.org", 
+    "nytimes.com", "washingtonpost.com", "wsj.com", "bloomberg.com", 
+    "snopes.com", "politifact.com", "factcheck.org", "who.int", "cdc.gov",
+    "cnn.com", "nbcnews.com", "abcnews.go.com", "cbsnews.com", "hindustantimes.com"
+  ],
+  "satire": [
+    "babylonbee.com", "theonion.com", "duffelblog.com", "waterfordwhispersnews.com",
+    "worldnewsdailyreport.com", "weeklyworldnews.com", "borowitz-report"
+  ]
+}

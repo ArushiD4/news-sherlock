@@ -8,14 +8,7 @@ const NewsSchema = new mongoose.Schema({
   recommendation: { type: String },
   apiUsed: { 
     type: String, 
-    enum: [
-      'Google', 
-      'OpenAI', 
-      'KeywordAnalysis', 
-      'MultiFactorEngine (ISOT-Trained)', // 👈 Match this exactly to your router code
-      'None'
-    ], 
-    default: 'None' 
+    default: 'MultiFactorEngine (ISOT-Trained)' 
   },
 
   userId: {
