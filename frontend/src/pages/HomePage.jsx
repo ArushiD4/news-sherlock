@@ -10,39 +10,54 @@ function HomePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // VALIDATION: We now accept text OR URLs, so we just check length
-    if (input.trim().length < 20) {
-      alert("Please enter a valid headline or claim (at least 20 chars) for accurate detection.");
+    if (input.trim().length < 50) {
+      alert("Please enter a valid headline or claim (at least 50 chars) for accurate detection.");
       return;
     }
 
     setLoading(true);
 
+    // 1. Retrieve User ID from Local Storage
+    let userId = null;
+    const storedUser = localStorage.getItem("user");
+    
+    if (storedUser) {
+      try {
+        const userObj = JSON.parse(storedUser);
+        // Supports both 'id' (virtual) or '_id' (raw MongoDB)
+        userId = userObj.id || userObj._id; 
+      } catch (err) {
+        console.error("Could not parse user data from local storage", err);
+      }
+    }
+
     try {
-      // 1. Send Text to Node.js Backend
-      // ⚠️ UPDATED: Port 5000 and /api/news/check endpoint
+      // 2. Send Text AND User ID to Node.js Backend
       const response = await fetch("http://localhost:5000/api/news/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // ⚠️ UPDATED: Backend expects 'text', not 'url'
-        body: JSON.stringify({ text: input.trim() }),
+        body: JSON.stringify({ 
+            text: input.trim(),
+            userId: userId // ✅ Sending the ID to link history
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // 2. Success: Navigate to Results with NEW data structure
+        // 3. Success: Navigate to Results
         navigate("/results", { 
           state: { 
             originalText: input, 
-            verdict: data.verdict,       // e.g. "Fake", "Real"
-            confidence: data.confidence, // e.g. 85
-            reasons: data.reasons,       // Array of strings
-            apiUsed: data.apiUsed        // e.g. "Google" or "KeywordAnalysis"
+            verdict: data.verdict,
+            confidence: data.confidence,
+            reasons: data.reasons,
+            recommendation: data.recommendation || '',
+            apiUsed: data.apiUsed
           } 
         });
       } else {
-        // 3. Server Error
+        // 4. Server Error
         alert(data.msg || "Analysis failed. Please try again.");
       }
 
@@ -73,7 +88,6 @@ function HomePage() {
         <form onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col gap-6">
           <input
             type="text"
-            // ⚠️ UPDATED: Placeholder to reflect text capability
             placeholder="Paste news URL, headline or claim here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}

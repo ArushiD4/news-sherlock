@@ -24,7 +24,7 @@ function Login() {
 
       if (data.token) {
         localStorage.setItem("token", data.token);
-        // Redirect to Home after successful login
+        localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/detect"); 
       } else {
         setError(data.message || "Login failed");

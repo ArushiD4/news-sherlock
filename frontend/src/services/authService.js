@@ -1,6 +1,4 @@
-// Point to the Python Flask Server Port (5000)
-// And remove "/api/auth" because your app.py routes are just "/login" and "/register"
-const BASE_URL = "http://localhost:3000/api/auth";
+const BASE_URL = "http://localhost:5000/api/auth";
 
 export const registerUser = async (userData) => {
   try {
@@ -12,10 +10,18 @@ export const registerUser = async (userData) => {
       body: JSON.stringify(userData),
     });
 
-    return await response.json();
+    const data = await response.json();
+    
+    // If the server returns 400 or 500, we throw an error so the catch block handles it
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
+    }
+
+    return data;
   } catch (error) {
     console.error("Register Error:", error);
-    return { success: false, message: "Server connection failed" };
+    // Return a structured error so the UI can display it
+    return { success: false, message: error.message || "Server connection failed" };
   }
 };
 
@@ -29,9 +35,15 @@ export const loginUser = async (userData) => {
       body: JSON.stringify(userData),
     });
 
-    return await response.json();
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Login failed");
+    }
+
+    return data;
   } catch (error) {
     console.error("Login Error:", error);
-    return { success: false, message: "Server connection failed" };
+    return { success: false, message: error.message || "Server connection failed" };
   }
 };

@@ -3,13 +3,13 @@ import bgImage from "../assets/images/bg.png";
 
 const pillars = [
   {
-    title: "Multi-signal analysis",
-    desc: "Checks factual consistency, source reputation, writing style, and sentiment to flag subtle misinformation patterns.",
+    title: "News analysis",
+    desc: "Detects misinformation through keyword patterns and fact checks",
     icon: "🔍",
   },
   {
-    title: "Bias & framing",
-    desc: "Highlights partisan or emotional framing so you can see how narratives are being shaped.",
+    title: "Misinformation detection",
+    desc: "Leverages the Google Fact Check API to identify and flag misinformation",
     icon: "🧭",
   },
   {
@@ -22,7 +22,7 @@ const pillars = [
 const steps = [
   { title: "Paste or drop a link", desc: "Add any article or headline—long or short." },
   { title: "We verify signals", desc: "Models cross-check claims, sources, and linguistic cues." },
-  { title: "Get instant insight", desc: "See a credibility score, bias notes, and suggested next reads." },
+  { title: "Get instant insight", desc: "See a credibility score." },
 ];
 
 export default function AboutPage() {
@@ -44,12 +44,11 @@ export default function AboutPage() {
               About News Sherlock
             </p>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-lg">
-            Cut through the noise. See the real story
+            News Sherlock:<br />             Clarity in a world of Chaos.
             </h1>
             <p className="text-lg text-white/80 leading-relaxed">
-              News Sherlock blends fact-checking datasets, bias detection, and narrative analysis
-              to help you evaluate any article in seconds. Built for readers, researchers, and
-              teams who demand clarity before they share.
+              News Sherlock is an automated verification platform designed to combat the spread of digital misinformation. 
+              By leveraging the Google Fact Check API alongside  keyword analysis, it instantly flags suspicious articles and helps users distinguish credible journalism from fake news.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -116,17 +115,7 @@ export default function AboutPage() {
             no result is presented without its supporting signals. Use it to deepen your own
             judgment—not replace it.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <span className="px-4 py-2 rounded-full bg-white/10 border border-white/15 text-sm">
-              Privacy-first processing
-            </span>
-            <span className="px-4 py-2 rounded-full bg-white/10 border border-white/15 text-sm">
-              Human-readable rationale
-            </span>
-            <span className="px-4 py-2 rounded-full bg-white/10 border border-white/15 text-sm">
-              Continuous model audits
-            </span>
-          </div>
+         
         </section>
       </div>
     </div>

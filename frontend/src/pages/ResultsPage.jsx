@@ -6,21 +6,18 @@ export default function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 1. Get Real Data from Router State (Updated for Node.js Backend)
-  const { originalText, verdict, confidence, reasons, apiUsed } = location.state || {
+  const { originalText, verdict, confidence, reasons, recommendation, apiUsed } = location.state || {
     originalText: "No text provided",
     verdict: "Unknown", 
     confidence: 0,
     reasons: ["Please go back and scan a valid news text."],
+    recommendation: "",
     apiUsed: "None"
   };
 
-  // 2. Determine Styling based on Verdict
-  // We check for keywords because sometimes verdict might be "False" or "Fake" or "Pants on Fire"
-  const isFake = ["Fake", "False", "Pants on Fire", "Misleading"].some(v => verdict?.includes(v));
+  const isFake = ["Fake", "False", "Pants on Fire", "Misleading", "Satire"].some(v => verdict?.includes(v));
   const isTrue = ["Real", "True", "Likely Real"].some(v => verdict?.includes(v));
   
-  // Default (Unknown/Unverified)
   let resultColor = "text-yellow-500";
   let borderColor = "border-yellow-500";
   let badgeColor = "bg-yellow-500/10 text-yellow-500";
@@ -46,7 +43,6 @@ export default function ResultsPage() {
             Analysis Report
           </h1>
 
-          {/* Result Card */}
           <div className={`bg-prussian_blue p-8 md:p-10 rounded-3xl shadow-2xl border-2 ${borderColor} relative overflow-hidden`}>
             
             <div className="text-center">
@@ -58,18 +54,28 @@ export default function ResultsPage() {
                 {verdict}
               </div>
 
-              {/* Confidence & Source Badges */}
               <div className="flex justify-center gap-4 mb-8">
                 <span className={`px-4 py-2 rounded-full font-mono text-sm border ${borderColor} ${badgeColor}`}>
                   Confidence: {confidence}%
                 </span>
                 <span className="px-4 py-2 rounded-full font-mono text-sm bg-gray-700 text-gray-300 border border-gray-600">
-                  Analyzed by: {apiUsed}
+                  Source: {apiUsed}
                 </span>
               </div>
             </div>
 
-            {/* Analysis Reasons Section */}
+            {/* ✅ ADDED: Recommendation Section */}
+            {recommendation && (
+              <div className="mt-6 mb-6 p-6 rounded-xl border-2 border-dashed border-yellow-500/50 bg-yellow-500/5">
+                <h3 className="text-lg font-bold text-yellow-500 mb-2 flex items-center">
+                  💡 Suggestion
+                </h3>
+                <p className="text-gray-200 text-lg italic leading-relaxed">
+                  {recommendation}
+                </p>
+              </div>
+            )}
+
             {reasons && reasons.length > 0 && (
               <div className="mt-6 bg-oxford_blue p-6 rounded-xl border border-charcoal">
                 <h3 className="text-lg font-semibold text-[#d4af37] mb-3">
@@ -83,7 +89,6 @@ export default function ResultsPage() {
               </div>
             )}
 
-            {/* Original Text Section */}
             <div className="mt-6 p-6 rounded-xl border border-gray-700 bg-gray-900/50">
                 <h3 className="text-sm font-semibold text-gray-400 mb-2 uppercase">
                   📝 Content Analyzed
@@ -95,7 +100,6 @@ export default function ResultsPage() {
 
           </div>
 
-          {/* Back Button */}
           <div className="mt-10 text-center pb-10">
             <button 
               onClick={() => navigate("/detect")}

@@ -2,20 +2,29 @@ import React from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import Navbar from "./components/navbar";
-// UPDATED IMPORTS:
 import Login from "./pages/LoginPage";       
 import Register from "./pages/RegisterPage"; 
 import HomePage from "./pages/HomePage";
 import ResultsPage from "./pages/ResultsPage";
 import AboutPage from "./pages/AboutPage";
 import DigestPage from "./pages/DigestPage";
+import HistoryPage from "./pages/HistoryPage";
 
 function LandingScreen() {
   const navigate = useNavigate();
 
   const handleLoginRegister = () => navigate("/login");
-  const handleDetect = () =>
-    navigate("/detect", { state: { scrollToDetect: true } });
+
+  const handleDetect = () => {
+    const token = localStorage.getItem("Token");
+
+    if (token) {
+      navigate("/detect", {state: { scrollToDetect: true }});
+    } else {
+      navigate("/login");
+    }
+  };
+
 
   return (
     <div
@@ -90,6 +99,7 @@ function App() {
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/digest" element={<DigestPage />} />
+        <Route path="/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
   );
