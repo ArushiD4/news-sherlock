@@ -10,21 +10,19 @@ function HomePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (input.trim().length < 50) {
-      alert("Please enter a valid headline or claim (at least 50 chars) for accurate detection.");
+    if (input.trim().length < 10) {
+      alert("Please enter a valid headline or claim (at least 10 chars) for accurate detection.");
       return;
     }
 
     setLoading(true);
 
-    // 1. Retrieve User ID from Local Storage
     let userId = null;
     const storedUser = localStorage.getItem("user");
     
     if (storedUser) {
       try {
         const userObj = JSON.parse(storedUser);
-        // Supports both 'id' (virtual) or '_id' (raw MongoDB)
         userId = userObj.id || userObj._id; 
       } catch (err) {
         console.error("Could not parse user data from local storage", err);
@@ -32,20 +30,18 @@ function HomePage() {
     }
 
     try {
-      // 2. Send Text AND User ID to Node.js Backend
       const response = await fetch("http://localhost:5000/api/news/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
             text: input.trim(),
-            userId: userId // ✅ Sending the ID to link history
+            userId: userId 
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // 3. Success: Navigate to Results
         navigate("/results", { 
           state: { 
             originalText: input, 
@@ -57,7 +53,6 @@ function HomePage() {
           } 
         });
       } else {
-        // 4. Server Error
         alert(data.msg || "Analysis failed. Please try again.");
       }
 

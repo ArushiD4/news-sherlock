@@ -8,7 +8,7 @@ const NewsSchema = new mongoose.Schema({
   recommendation: { type: String },
   apiUsed: { 
     type: String, 
-    default: 'MultiFactorEngine (ISOT-Trained)' 
+    default: 'MultiFactorEngine (Heuristics)' 
   },
 
   userId: {

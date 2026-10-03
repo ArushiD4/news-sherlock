@@ -22,7 +22,7 @@ function Register() {
 
     try {
       const result = await registerUser(formData);
-      if (result.success || result.message === "User registered successfully") { // Adjust based on your API response
+      if (result.success || result.message === "User registered successfully") { 
         alert("Registration Successful! Please login.");
         navigate("/login");
       } else {

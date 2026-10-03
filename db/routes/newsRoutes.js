@@ -29,7 +29,7 @@ try {
   const rawData = fs.readFileSync(dbPath, 'utf8');
   threatDB = JSON.parse(rawData);
 } catch (err) {
-  threatDB = { factors: { topic_triggers: { 'General': ['alien', 'conspiracy'] } } };
+  threatDB = { factors: { topic_triggers: { 'General': ['alien', 'conspiracy', 'fake'] } } };
 }
 
 function getSearchQuery(inputText) {
@@ -113,9 +113,9 @@ router.post('/check', async (req, res) => {
           verdict: isFake ? "Fake / Satire" : "Likely Real",
           confidence: 95,
           reasons: [
-            `Fact Check by ${review.publisher.name}: "${review.textualRating}"`,
-            `Source: ${review.url}`
-          ],
+            `Fact Check by ${review.publisher.name}: "${review.textualRating}"`],
+            sourceURL: review.url
+          ,
           recommendation: `This claim has been verified by ${review.publisher.name}. Click the link in reasons to see the proof.`,
           apiUsed: "Google Fact Check API"
         };
@@ -172,7 +172,7 @@ router.post('/check', async (req, res) => {
           }
 
           const upperCount = (text.match(/\b[A-Z]{4,}\b/g) || []).length;
-          if (text.length > 50 && upperCount > 2) {
+          if (text.length > 50 && upperCount > 5) {
             totalSuspicion += 15;
             reasons.push("Excessive use of ALL CAPS.");
           }

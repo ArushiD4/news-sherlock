@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
-import bgImage from "../assets/images/bg.png"; // Make sure this path is correct
+import bgImage from "../assets/images/bg.png"; 
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError(""); 
     
     try {
       const data = await loginUser(formData);

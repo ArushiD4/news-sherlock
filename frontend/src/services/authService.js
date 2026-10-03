@@ -12,7 +12,6 @@ export const registerUser = async (userData) => {
 
     const data = await response.json();
     
-    // If the server returns 400 or 500, we throw an error so the catch block handles it
     if (!response.ok) {
       throw new Error(data.message || "Registration failed");
     }
@@ -20,7 +19,6 @@ export const registerUser = async (userData) => {
     return data;
   } catch (error) {
     console.error("Register Error:", error);
-    // Return a structured error so the UI can display it
     return { success: false, message: error.message || "Server connection failed" };
   }
 };

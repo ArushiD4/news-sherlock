@@ -7,7 +7,6 @@ import Register from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import ResultsPage from "./pages/ResultsPage";
 import AboutPage from "./pages/AboutPage";
-import DigestPage from "./pages/DigestPage";
 import HistoryPage from "./pages/HistoryPage";
 
 function LandingScreen() {
@@ -98,7 +97,6 @@ function App() {
         <Route path="/detect" element={<HomePage />} />
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/digest" element={<DigestPage />} />
         <Route path="/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
