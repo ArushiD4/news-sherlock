@@ -1,32 +1,15 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
+# Dependencies
 node_modules/
-dist/
-dist-ssr
-*.local
-npm-debug.log*
-build/
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+__pycache__/
+*.py[cod]
+venv/
+# Environment
 .env
-.env.local
-.env.*.local
+# ML & Data
+ml/data/*
+!ml/data/.gitkeep
+*.h5
+*.pt
+*.pth
+*.weights
 
-backend/node_modules/
-backend/prisma/.env

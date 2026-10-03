@@ -9,7 +9,6 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
   const dropdownRef = useRef(null);
 
-  // 1. Check for logged-in user on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -21,7 +20,6 @@ export default function Navbar() {
     }
   }, []);
 
-  // 2. Handle clicks outside to close dropdown
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -32,14 +30,13 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 3. Logout Logic
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.clear();
     setUser(null);
     setIsDropdownOpen(false);
-    navigate("/"); // Redirect to landing page
+    navigate("/"); 
   };
 
   const navItems = [
@@ -166,7 +163,7 @@ export default function Navbar() {
                     onClick={() => setIsDropdownOpen(false)}
                     className="flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-yellow-500/10 hover:text-[#d4af37] transition-colors"
                   >
-                    <span>🔍</span> New Scan
+                    <span></span> New Scan
                   </Link>
 
                   <div className="border-t border-gray-800 mt-1"></div>
@@ -175,7 +172,7 @@ export default function Navbar() {
                     onClick={handleLogout}
                     className="w-full text-left flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
                   >
-                    <span>🚪</span> Logout
+                    <span></span> Logout
                   </button>
                 </div>
               ) : (
@@ -186,14 +183,14 @@ export default function Navbar() {
                     onClick={() => setIsDropdownOpen(false)}
                     className="flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-yellow-500/10 hover:text-[#d4af37] transition-colors"
                   >
-                    <span>🔐</span> Login
+                    <span></span> Login
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setIsDropdownOpen(false)}
                     className="flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-yellow-500/10 hover:text-[#d4af37] transition-colors"
                   >
-                    <span>📝</span> Register
+                    <span></span> Register
                   </Link>
                 </div>
               )}

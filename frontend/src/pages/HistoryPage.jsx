@@ -9,7 +9,6 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      // 1. Get User ID
       const storedUser = localStorage.getItem("user");
       if (!storedUser) return;
       
@@ -17,7 +16,6 @@ export default function HistoryPage() {
       const userId = userObj.id || userObj._id;
 
       try {
-        // 2. Fetch Data from Backend
         const res = await fetch(`http://localhost:5000/api/news/history/${userId}`);
         const data = await res.json();
         setScans(data);

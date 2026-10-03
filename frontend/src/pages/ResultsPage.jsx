@@ -15,6 +15,29 @@ export default function ResultsPage() {
     apiUsed: "None"
   };
 
+  const renderWithLinks = (text) => {
+    if (!text) return "";
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a 
+            key={i} 
+            href={part} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-blue-400 underline break-all hover:text-blue-300 transition-colors"
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   const isFake = ["Fake", "False", "Pants on Fire", "Misleading", "Satire"].some(v => verdict?.includes(v));
   const isTrue = ["Real", "True", "Likely Real"].some(v => verdict?.includes(v));
   
@@ -59,19 +82,19 @@ export default function ResultsPage() {
                   Confidence: {confidence}%
                 </span>
                 <span className="px-4 py-2 rounded-full font-mono text-sm bg-gray-700 text-gray-300 border border-gray-600">
-                  Source: {apiUsed}
+                  Source: {location.state.apiUsed || "MultiFactorEngine (Heuristic)"}
                 </span>
               </div>
             </div>
 
-            {/* ✅ ADDED: Recommendation Section */}
+            {/* Recommendation Section */}
             {recommendation && (
               <div className="mt-6 mb-6 p-6 rounded-xl border-2 border-dashed border-yellow-500/50 bg-yellow-500/5">
                 <h3 className="text-lg font-bold text-yellow-500 mb-2 flex items-center">
                   💡 Suggestion
                 </h3>
                 <p className="text-gray-200 text-lg italic leading-relaxed">
-                  {recommendation}
+                  {renderWithLinks(recommendation)}
                 </p>
               </div>
             )}
@@ -83,7 +106,7 @@ export default function ResultsPage() {
                 </h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-300 text-lg">
                   {reasons.map((reason, index) => (
-                    <li key={index}>{reason}</li>
+                    <li key={index}>{renderWithLinks(reason)}</li>
                   ))}
                 </ul>
               </div>
